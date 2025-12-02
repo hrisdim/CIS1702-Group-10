@@ -6,15 +6,17 @@
       "south": "front door",
       "west": "",
       "description": "",
-      "requirement": ""
+      "requirement": "",
+      "puzzle": "window"
     },
     "front door": {
       "north": "main corridor",
-      "east": "window",
+      "east": "",
       "south": "",
       "west": "",
       "description": "",
-      "requirement": "front door key"
+      "requirement": "front door key",
+      "puzzle": ""
     },
     "back door": {
       "north": "back garden",
@@ -22,7 +24,8 @@
       "south": "main corridor",
       "west": "",
       "description": "",
-      "requirement": "back door key"
+      "requirement": "back door key",
+      "puzzle": ""
     }
   },
   "items": {
@@ -35,7 +38,7 @@
   "puzzles": {
     "main corridor": {
       "window": {
-        "description": "",
+        "description": "Destroy the window to get outside.",
         "requirement": "anabolic steroid"
       }
     }
