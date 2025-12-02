@@ -1,0 +1,40 @@
+{
+  "metadata": {
+    "title": "",              // Game title
+    "desc": "",               // Short description of the game
+    "help": "",               // Instructions or guide for the player
+    "win": "",                // Define what puzzle is a win condition
+    "lose": ""                // Define what puzzle is a lose condition
+  },
+  "rooms": {
+    "room name": {            // Unique identifier for each room
+      "north": "",            // Room connected to the north (leave blank if no exit)
+      "east": "",             // Room connected to the east (leave blank if no exit)
+      "south": "",            // Room connected to the south (leave blank if no exit)
+      "west": "",             // Room connected to the west (leave blank if no exit)
+      "desc": "",             // Description of the room
+      "requirement": "",      // Puzzle needed to enter (optional)
+      "items": [],            // Items located in this room
+      "npc": [                // Non-player characters in the room
+        {
+          "name": "",         // NPC name
+          "desc": "",         // NPC description
+          "dialogue": ""      // What the NPC says
+        }
+      ],
+      "puzzles": [            // Puzzles or interactions in the room
+        {
+          "name": "",         // Puzzle name
+          "desc": "",         // Puzzle description
+          "need": "",         // Item required to solve puzzle
+          "reward": "",       // Reward for solving puzzle
+          "done": false       // Puzzle completion state
+        }
+      ]
+    }
+    // Add more rooms here following the same structure
+  },
+  "inventory": [],            // Player’s starting inventory
+  "completed": [],            // Completed puzzles/events
+  "saved room": {}            // Save state (e.g., current room)
+}
