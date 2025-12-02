@@ -32,7 +32,7 @@
     "front door key": {
       "bool": false,
       "location": "front door",
-      "description": ""
+      "description": "This unlocks the front door."
     }
   },
   "puzzles": {
