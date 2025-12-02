@@ -62,9 +62,9 @@
         },
         {
           "name": "Spider",
-          "desc": "Meow. *The spider leaps at you and kills you*",
+          "desc": "Meow. *The spider leaps at you and kills you.*",
           "need": "loose change",
-          "reward": "",
+          "reward": "spider's affection",
           "done": false
         }
       ]
@@ -108,7 +108,7 @@
       ]
     }
   },
-  "inventory": ["loos e change"],
+  "inventory": ["loose change"],
   "completed": [],
   "saved room": {}
 }
