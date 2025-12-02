@@ -1,0 +1,106 @@
+{
+  "metadata": {
+    "title": "Game Title",
+    "desc": "Cool game with cool map and puzzle.",
+    "help": "Guide how to play the game",
+    "win": "will"
+  },
+  "rooms": {
+    "front garden": {
+      "north": "main hall",
+      "east": "",
+      "south": "",
+      "west": "",
+      "desc": "You stand in a front garden with a door leading into a mansion.",
+      "requirement": "",
+      "items": [],
+      "puzzles": [
+        {
+          "name": "welcome mat",
+          "desc": "You can peak under the welcome mat.",
+          "need": "",
+          "reward": "front door key",
+          "done": false
+        },
+        {
+          "name": "front door",
+          "desc": "You must use the front door key to open the door.",
+          "need": "front door key",
+          "reward": "",
+          "done": false
+        }
+      ]
+    },
+    "main hall": {
+      "north": "",
+      "east": "decrepit room",
+      "south": "front garden",
+      "west": "bathroom",
+      "desc": "You stand before a big main hall with rooms on every side.",
+      "requirement": "a front door",
+      "items": [],
+      "npc": [
+        {
+          "name": "Butler",
+          "desc": "The butler bows to you.",
+          "dialogue": "There may be a statue with no eye in here than may give a key to unlock a door if you may find its eye, maybe."
+        },
+        {
+          "name": "Spider",
+          "desc": "The spider looks at you",
+          "dialogue": "Meow."
+        }
+      ],
+      "puzzles": [
+        {
+          "name": "statue",
+          "desc": "You can put an eye in the statue located at the east door.",
+          "need": "statue eye",
+          "reward": "",
+          "done": false
+        }
+      ]
+    },
+    "bathroom": {
+      "north": "",
+      "east": "main hall",
+      "south": "",
+      "west": "",
+      "desc": "You are inside a bathroom with a very large bath.",
+      "requirement": "",
+      "items": [],
+      "npc": [],
+      "puzzles": [
+        {
+          "name": "bathtub",
+          "desc": "There is an eye in the bathtub.",
+          "need": "",
+          "reward": "statue eye",
+          "done": false
+        }
+      ]
+    },
+    "decrepit room": {
+      "north": "",
+      "east": "",
+      "south": "",
+      "west": "main hall",
+      "desc": "There is only you and a table and chair in the middle of this empty room.",
+      "requirement": "a statue",
+      "items": [],
+      "npc": [],
+      "puzzles": [
+        {
+          "name": "will",
+          "desc": "There is a will of £0 and an Emmet LEGO figure for you RIP.",
+          "need": "",
+          "reward": "",
+          "done": false
+        }
+      ]
+    }
+  },
+  "inventory": ["loose change"],
+  "completed": [],
+  "saved room": {}
+}
