@@ -3,7 +3,8 @@
     "title": "Game Title",
     "desc": "Cool game with cool map and puzzle.",
     "help": "Guide how to play the game",
-    "win": "will"
+    "win": "will",
+    "lose": "spider"
   },
   "rooms": {
     "front garden": {
@@ -57,6 +58,13 @@
           "desc": "You can put an eye in the statue located at the east door.",
           "need": "statue eye",
           "reward": "",
+          "done": false
+        },
+        {
+          "name": "Spider",
+          "desc": "Meow. *The spider leaps at you and kills you.*",
+          "need": "loose change",
+          "reward": "spider's affection",
           "done": false
         }
       ]
