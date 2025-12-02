@@ -1,5 +1,43 @@
 {
-    {
-        "rooms": ""
+  "rooms": {
+    "main corridor": {
+      "north": "back door",
+      "east": "",
+      "south": "front door",
+      "west": "",
+      "description": "",
+      "requirement": ""
+    },
+    "front door": {
+      "north": "main corridor",
+      "east": "window",
+      "south": "",
+      "west": "",
+      "description": "",
+      "requirement": "front door key"
+    },
+    "back door": {
+      "north": "back garden",
+      "east": "",
+      "south": "main corridor",
+      "west": "",
+      "description": "",
+      "requirement": "back door key"
     }
+  },
+  "items": {
+    "front door key": {
+      "bool": false,
+      "location": "front door",
+      "description": ""
+    }
+  },
+  "puzzles": {
+    "main corridor": {
+      "window": {
+        "description": "",
+        "requirement": "anabolic steroid"
+      }
+    }
+  }
 }
