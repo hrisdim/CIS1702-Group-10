@@ -31,3 +31,7 @@ Project Brief 3: Text-Based Adventure Game Engine
   - Allow the player to save and load their game progress to a separate file.
 
 - Marking Focus Areas: Strong separation of game logic ("engine") from game data ("JSON file"), effective use of complex data structures (nested dictionaries/lists), a robust input parser, and logical state management.
+
+# Flowchart
+
+<img width="2492" height="2382" alt="finishedflowchart" src="https://github.com/user-attachments/assets/821990bf-aa7a-4b4c-85a4-d7ce38478cff" />
