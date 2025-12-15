@@ -1,0 +1,62 @@
+"""move player function
+
+FUNCTION move_player(noun)
+
+    IF noun is NOT a valid direction THEN
+        RETURN "invalid input"
+    END IF
+
+    IF requirements are NOT met THEN
+        RETURN "invalid input"
+    END IF
+
+    load_room(noun)
+
+END FUNCTION
+
+"""
+
+
+
+""" load room function
+
+FUNCTION load_room(room)
+
+    OUTPUT room["desc"]
+
+    LOOP
+        OUTPUT available actions
+
+        INPUT action
+
+        parse_input(action, room)
+
+        IF input is VALID THEN
+            EXIT LOOP
+        ELSE
+            CONTINUE LOOPING
+        END IF
+    END LOOP
+
+END FUNCTION
+
+"""
+
+
+
+
+"""
+FUNCTION grab_item(noun)
+
+    IF noun is NOT a valid item THEN
+        RETURN "invalid input"
+    END IF
+
+    add item to inventory
+
+    RETURN "picked up item"
+
+END FUNCTION
+
+"""
+
