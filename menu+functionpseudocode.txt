@@ -1,0 +1,67 @@
+function main_menu():
+    OPEN "game_data.json" as gd
+    metadata = gd("metadata")
+    OUTPUT metadata("title")
+    OUTPUT metadata("desc")
+    OUTPUT metadata("help")
+    if "save_game.json" exists:
+        while True:
+            OUTPUT "Would  you like to load your last game?"
+            INPUT choice
+            if choice = "yes":
+                OPEN "save_game.json" as sg
+                load_room(gd["saved_room"])
+
+            if choice = "no":
+                OUTPUT "Would you like to start a new game?"
+                INPUT choice
+                if choice = "yes":
+                    load_room(gd["rooms"][0])
+
+                if choice = "no":
+                    break
+            
+            OUTPUT "Please enter a valid answer"
+
+        else:
+            OUTPUT "Would you like to start a new game?"
+            INPUT choice
+            if choice = "yes":
+                load_room(gd["rooms"][0])
+        
+    else:
+        while True:
+            OUTPUT "Would you like to start?"
+            INPUT choice
+            if choice = "yes":
+                load_room(gd["rooms"][0])
+
+            if choice = "no":
+                break
+            
+            OUTPUT "Please enter a valid answer"
+
+parse_input(action, room):
+    if action = 1 word:
+        if action = "help":
+            verb = action.split(" ")[0]
+    else:
+        split_list = action.split(" ")
+     verb = split_list[0]
+     noun = split_list[1]
+
+    if verb != string:
+        OUTPUT "Please enter a valid action"
+        return invalid
+
+    
+    
+     
+
+
+        
+
+
+            
+                
+    
