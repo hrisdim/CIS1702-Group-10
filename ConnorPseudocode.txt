@@ -1,0 +1,28 @@
+FUNCTION npc_speech(noun):
+    npc_list = gd["room"]["npc"]
+    IF noun not in npc_list THEN:
+        RETURN "invalid input"
+
+    ELSE:
+        npc = gd["room"]["npc"] WHERE name = noun
+        OUTPUT npc["dialogue"]
+        RETURN "end of dialogue"
+    END IF
+END FUNCTION
+
+FUNCTION drop_item(noun):
+    IF noun != item in inventory THEN:
+        RETURN "invalid input"
+
+    ELSE:
+        APPEND gd["room"]["items"] WITH gd["inventory"][noun index]
+        DELETE gd["inventory"][noun index]
+        RETURN "dropped item"
+    END IF
+END FUNCTION
+
+FUNCTION save_and_quit(room):
+    gd["saved_room"] = room
+    WRITE gd TO "save_game.json"
+    QUIT game
+END FUNCTION

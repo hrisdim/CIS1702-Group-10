@@ -1,67 +1,272 @@
-function main_menu():
-    OPEN "game_data.json" as gd
+FUNCTION npc_speech(noun):
+    npc_list = gd["rooms"]["npc"]
+    IF noun not in npc_list THEN:
+        RETURN "invalid input"
+
+    ELSE:
+        npc = gd["rooms"]["npc"] WHERE name = noun
+        OUTPUT npc["dialogue"]
+        RETURN "end of dialogue"
+    END IF
+END FUNCTION
+
+FUNCTION drop_item(noun):
+    IF noun == item in inventory THEN:
+        APPEND gd["rooms"]["items"] WITH gd["inventory"][noun index]
+        DELETE gd["inventory"][noun index]
+        OUTPUT "dropped " + noun
+        RETURN None
+
+    ELSE:
+        RETURN "invalid input"
+    END IF
+END FUNCTION
+
+FUNCTION grab_item(noun):
+    IF noun == item in room THEN:
+        APPEND gd["inventory"] WITH gd["rooms"]["items"][noun index]
+        DELETE gd["rooms"]["items"][noun index]
+        OUTPUT "grabbed " + noun
+        RETURN None
+
+    ELSE:
+        RETURN "invalid input"
+    END IF
+END FUNCTION
+
+FUNCTION interact(noun):
+    IF noun == puzzle in room THEN:
+        IF puzzle["done"] == False THEN:
+            puzzle["done"] = True
+            APPEND gd["completed"] WITH puzzle["name"]
+            OUTPUT "You have completed the puzzle"
+
+            IF puzzle["reward"] != "" THEN:
+                APPEND gd["inventory"] WITH puzzle["reward"]
+            END IF
+
+            IF puzzle["need"] != "" THEN:
+                DELETE gd["inventory"][puzzle["need"] index]
+            END IF
+
+            IF puzzle["name"] == gd["metadata"]["win"] THEN:
+                OUTPUT "You win!"
+                QUIT game
+            END IF
+
+            IF puzzle["name"] == gd["metadata"]["lose"] THEN:
+                OUTPUT "You lose!"
+                QUIT game
+            END IF
+
+            RETURN None
+
+        ELSE:
+            RETURN "You have already completed this puzzle"
+        END IF
+
+    ELSE:
+        RETURN "invalid input"
+    END IF
+END FUNCTION
+
+FUNCTION save_and_quit(room):
+    gd["saved room"] = room
+    WRITE gd TO "save_game.json"
+    QUIT game
+END FUNCTION
+
+FUNCTION parse_input(action, room):
+    IF action != have spaces THEN:
+        verb = action.split(" ")[0]            
+
+    ELSE:
+        split_list = action.split(" ", 1)
+        verb = split_list[0]
+        noun = split_list[1]
+    END IF
+
+    SWITCH verb THEN:
+        CASE "go":
+            RETURN move_player(noun)
+        CASE "grab":
+            RETURN grab_item(noun)
+        CASE "drop":
+            RETURN drop_item(noun)
+        CASE "check":
+            RETURN interact(noun)
+        CASE "talk":
+            RETURN npc_speech(noun)
+        CASE "help":
+            OUTPUT metadata("help")
+            RETURN None
+        CASE "quit":
+            RETURN save_and_quit(room)
+        DEFAULT:
+            OUTPUT "Please enter a valid action"
+            RETURN invalid
+    END SWITCH
+END FUNCTION
+
+FUNCTION load_room(room):
+    WHILE True THEN:
+        OUTPUT room["desc"]
+        IF room["north"] != "" THEN:
+            OUTPUT "There is a way to the ." + room["north"]
+        END IF
+
+        IF room["east"] != "" THEN:
+            OUTPUT "There is a way to the ." + room["east"]
+        END IF
+
+        IF room["south"] != "" THEN:
+            OUTPUT "There is a way to the ." + room["south"]
+        END IF
+
+        IF room["west"] != "" THEN:
+            OUTPUT "There is a way to the ." + room["west"]
+        END IF
+
+        IF room["items"] != [] THEN:
+            OUTPUT "You see the following items: " + room["items"]
+        END IF
+
+        IF room["npc"] != [] THEN:
+            OUTPUT "You see the following NPCs: "
+            
+            FOR npc IN room["npc"] THEN:
+                OUTPUT npc["name"]
+                OUTPUT npc["desc"] 
+            END FOR
+        END IF
+
+        IF room["puzzles"] != [] THEN:
+            OUTPUT "You see the following: "
+            FOR puzzle IN room["puzzles"] THEN:
+                IF puzzle["done"] == False THEN:
+                    OUTPUT puzzle["name"]
+                END IF
+            END FOR
+        END IF
+
+        OUTPUT "You have the following items in your inventory: " + inventory
+        INPUT action
+        result = parse_input(action, room)
+
+        IF result = "invalid input " THEN:
+            OUTPUT "Please enter a valid action"
+        END IF
+    END WHILE
+END FUNCTION
+
+FUNCTION move_player(noun):
+    IF noun = "north" THEN:
+        IF room["north"] != "" THEN:
+            IF room["requirement"] != "" THEN:
+                IF room["requirement"] in inventory THEN:
+                    load_room(gd["rooms"][room["north"]])
+                END IF
+
+                IF room["requirement"] in completed THEN:
+                    load_room(gd["rooms"][room["north"]])
+                END IF
+            END IF
+        END IF
+    END IF
+
+    IF noun = "east" THEN:
+        IF room["east"] != "" THEN:
+            IF room["requirement"] != "" THEN:
+                IF room["requirement"] in inventory THEN:
+                    load_room(gd["rooms"][room["east"]])
+                END IF
+
+                IF room["requirement"] in completed THEN:
+                    load_room(gd["rooms"][room["east"]])
+                END IF
+            END IF
+        END IF
+    END IF
+
+    IF noun = "south" THEN:
+        IF room["south"] != "" THEN:
+            IF room["requirement"] != "" THEN:
+                IF room["requirement"] in inventory THEN:
+                    load_room(gd["rooms"][room["south"]])
+                END IF
+
+                IF room["requirement"] in completed THEN:
+                    load_room(gd["rooms"][room["south"]])
+                END IF
+            END IF
+        END IF
+    END IF
+
+    IF noun = "west" THEN:
+        IF room["west"] != "" THEN:
+            IF room["requirement"] != "" THEN:
+                IF room["requirement"] in inventory THEN:
+                    load_room(gd["rooms"][room["west"]])
+                END IF
+
+                IF room["requirement"] in completed THEN:
+                    load_room(gd["rooms"][room["west"]])
+                END IF
+            END IF
+        END IF
+    END IF
+
+    return "invalid input"
+END FUNCTION
+
+FUNCTION main_menu():
     metadata = gd("metadata")
     OUTPUT metadata("title")
     OUTPUT metadata("desc")
     OUTPUT metadata("help")
-    if "save_game.json" exists:
-        while True:
-            OUTPUT "Would  you like to load your last game?"
-            INPUT choice
-            if choice = "yes":
-                OPEN "save_game.json" as sg
-                load_room(gd["saved_room"])
 
-            if choice = "no":
+    IF "save_game.json" exists THEN:
+        WHILE True THEN:
+            OUTPUT "Would you like to load your last game?"
+            INPUT choice
+
+            IF choice = "yes" THEN:
+                OPEN "save_game.json" as sg
+                load_room(gd["saved room"])
+            END IF
+
+            IF choice = "no" THEN:
                 OUTPUT "Would you like to start a new game?"
                 INPUT choice
-                if choice = "yes":
+                IF choice = "yes" THEN:
                     load_room(gd["rooms"][0])
+                END IF
 
-                if choice = "no":
+                IF choice = "no" THEN:
                     break
+                END IF
+            END IF
             
             OUTPUT "Please enter a valid answer"
-
-        else:
-            OUTPUT "Would you like to start a new game?"
-            INPUT choice
-            if choice = "yes":
-                load_room(gd["rooms"][0])
-        
-    else:
-        while True:
+        END WHILE
+    
+    ELSE:
+        WHILE True THEN:
             OUTPUT "Would you like to start?"
             INPUT choice
-            if choice = "yes":
+            IF choice = "yes" THEN:
                 load_room(gd["rooms"][0])
+            END IF
 
-            if choice = "no":
+            IF choice = "no" THEN:
                 break
+            END IF
             
             OUTPUT "Please enter a valid answer"
+        END WHILE
+    END IF
+END FUNCTION
 
-parse_input(action, room):
-    if action = 1 word:
-        if action = "help":
-            verb = action.split(" ")[0]
-    else:
-        split_list = action.split(" ")
-     verb = split_list[0]
-     noun = split_list[1]
-
-    if verb != string:
-        OUTPUT "Please enter a valid action"
-        return invalid
-
-    
-    
-     
-
-
-        
-
-
-            
-                
-    
+OPEN "game_data.json" as gd 
+main_menu()
+CLOSE gd
