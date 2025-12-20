@@ -36,4 +36,4 @@ Project Brief 3: Text-Based Adventure Game Engine
 
 This is the completed flowchart for the key structure on how the game engine will function.
 
-<img width="2492" height="2382" alt="finishedflowchart" src="https://github.com/user-attachments/assets/821990bf-aa7a-4b4c-85a4-d7ce38478cff" />
+![alt text](https://github.com/hrisdim/CIS1702-Group-10/blob/main/finishedflowchart.drawio.png "Finished Flowchart")
