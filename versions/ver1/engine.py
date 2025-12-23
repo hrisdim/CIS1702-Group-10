@@ -1,0 +1,277 @@
+import json
+import os
+import sys
+
+GAME_DATA_PATH = "game_data.json"
+SAVE_GAME_PATH = "save_game.json"
+
+
+def get_room(gd, name):
+	return gd.get("rooms", {}).get(name, {})
+
+
+def find_by_name(list, name):
+	for it in list or []:
+		if (it.get("name", "")).strip().lower() == name.strip().lower():
+			return it
+	return None
+
+
+# npc dialogue
+def npc_speech(gd, room_name, noun):
+	room = get_room(gd, room_name)
+	npc_list = room.get("npc", [])
+	npc = find_by_name(npc_list, noun)
+	if npc is None:
+		return "invalid input"
+	else:
+		print(npc.get("dialogue", ""))
+		return "End of Dialogue"
+
+
+# drop item in current room
+def drop_item(gd, room_name, noun):
+	room = get_room(gd, room_name)
+	items = room.setdefault("items", [])
+	if isinstance(noun, str) and noun.strip():
+		for it in gd.get("inventory", []):
+			if it.strip().lower() == noun.strip().lower():
+				gd["inventory"].remove(it)
+				items.append(it)
+				print(f"Dropped {it}")
+				return None
+			return "invalid input"
+	return "invalid input"
+
+
+# grab item if it's in the room
+def grab_item(gd, room_name, noun):
+	room = get_room(gd, room_name)
+	items = room.setdefault("items", [])
+	if isinstance(noun, str) and noun.strip():
+		for it in items:
+			if it.strip().lower() == noun.strip().lower():
+				gd["inventory"].append(it)
+				items.remove(it)
+				print(f"Grabbed {it}")
+				return None
+		return "invalid input"
+	return "invalid input"
+
+
+# interact with puzzle
+def interact(gd, room_name, noun):
+    room = get_room(gd, room_name)
+    puzzles = room.get("puzzles", [])
+    puzzle = find_by_name(puzzles, noun)
+    inventory = gd.get("inventory", [])
+    if puzzle is None:
+        return "invalid input"
+
+	# mark puzzle as done
+    if not puzzle.get("done", False):
+        puzzle["done"] = True
+        name = puzzle.get("name", "")
+        if name and name not in gd.get("completed", []):
+            gd.setdefault("completed", []).append(name)
+        print("You have completed the puzzle")
+
+		# add reward to inventory
+        reward = puzzle.get("reward", "")
+        if isinstance(reward, str) and reward.strip():
+            inventory.append(reward)
+
+		# consume needed item for puzzle
+        need = puzzle.get("need", "")
+        if isinstance(need, str) and need.strip():
+            for it in inventory:
+                if it.strip().lower() == need:
+                    inventory.remove(it)
+                    break
+
+		# check for win/lose condition
+        win = (gd.get("metadata", {}).get("win", ""))
+        lose = (gd.get("metadata", {}).get("lose", ""))
+        if name == win:
+            print("You win!")
+            sys.exit(0)
+        if name == lose:
+            print("You lose!")
+            sys.exit(0)
+        return None
+
+    else:
+        return "You have already completed this puzzle"
+
+
+# save and quit
+def save_and_quit(gd, room_name):
+    gd["saved room"] = room_name
+    with open(SAVE_GAME_PATH, "w", encoding="utf-8") as f:
+        json.dump(gd, f, indent=2)
+    print("Game saved. Quitting.")
+    sys.exit(0)
+
+
+# move player
+def move_player(gd, room_name, noun):
+	direction = noun.strip().lower()
+	if direction not in {"north", "east", "south", "west"}:
+		return "invalid input"
+
+	current = gd.get("rooms", {}).get(room_name, {})
+	target_name = (current.get(direction, "")).strip()
+	if not target_name:
+		return "invalid input"
+
+	target_room = gd.get("rooms", {}).get(target_name)
+	if not target_room:
+		return "invalid input"
+
+	requirement = (target_room.get("requirement", "")).strip()
+	completed_rooms = gd.get("completed", [])
+	if requirement:
+		if target_name in completed_rooms:
+			load_room(gd, target_name)
+			print(f"You have moved to {target_name}")
+			return target_name
+		if not any(it.strip().lower() == requirement.lower() for it in gd.get("inventory", [])):
+			print("You can't go there yet.")
+			return None
+		else:
+			load_room(gd, target_name)
+
+
+# parse user input
+def parse_input(gd, action, room_name):
+	txt = action.strip()
+
+	if not txt:
+		return "invalid input"
+	
+	split_list = txt.split(" ", 1)
+	verb = split_list[0].lower()
+	noun = split_list[1] if len(split_list) > 1 else ""
+
+	match verb:
+		case "go":
+			return move_player(gd, room_name, noun)
+		case "grab":
+			return grab_item(gd, room_name, noun)
+		case "drop":
+			return drop_item(gd, room_name, noun)
+		case "check":
+			return interact(gd, room_name, noun)
+		case "talk":
+			return npc_speech(gd, room_name, noun)
+		case "help":
+			print(gd.get("metadata", {}).get("help", ""))
+			return None
+		case "quit":
+			return save_and_quit(gd, room_name)
+		case _:
+			print("Please enter a valid action")
+			return "invalid input"
+
+
+def load_room(gd, room_name):
+	while True:
+		room = get_room(gd, room_name)
+		print(room.get("desc", ""))
+		for direction in ("north", "east", "south", "west"):
+			target = room.get(direction, "")
+			if isinstance(target, str) and target.strip():
+				print(f"There is a way to the {direction}: {target}")
+		
+		items = room.get("items", [])
+		if items:
+			print("You see the following items: " + ", " + items)
+		
+		npcs = room.get("npc", [])
+		if npcs:
+			print("You see the following NPCs:")
+			for npc in npcs:
+				print((npc.get("name", "")))
+				print((npc.get("desc", "")))
+
+		puzzles = room.get("puzzles", [])
+		not_done = [p for p in puzzles if not p.get("done", False)]
+		if not_done:
+			print("You see the following:")
+			for p in not_done:
+				name = p.get("name", "")
+				if name:
+					print(name)
+
+		print("You have the following items in your inventory: " + ", " + gd.get("inventory", []))
+		
+		try:
+			action = input("\nWhat do you do? ")
+		except EOFError:
+			# exit if input stream closes
+			save_and_quit(gd, room_name)
+		result = parse_input(gd, action, room_name)
+
+		if isinstance(result, str) and result.strip():
+			if result == "invalid input":
+				print("Please enter a valid action")
+
+
+
+# main menu
+def main_menu(gd):
+	metadata = gd.get("metadata", {})
+	print(metadata.get("title", ""))
+	print(metadata.get("desc", ""))
+	print(metadata.get("help", ""))
+
+	if os.path.exists(SAVE_GAME_PATH):
+		while True:
+			choice = input("Would you like to load your last game? (yes/no) ").strip().lower()
+			if choice == "yes":
+				# load saved game
+				with open(SAVE_GAME_PATH, "r", encoding="utf-8") as f:
+					sg = json.load(f)
+				gd = sg
+				gd.rooms = sg.get("rooms", {})
+				gd.inventory = sg.get("inventory", [])
+				gd.completed = sg.get("completed", [])
+				gd.metadata = sg.get("metadata", {})
+				saved_room_name = sg.get("saved room", None)
+				if isinstance(saved_room_name, str) and saved_room_name in gd.get("rooms", {}):
+					load_room(gd, saved_room_name)
+					return
+				
+			if choice == "no":
+				while True:
+					choice = input("Would you like to start a new game? (yes/no) ").strip().lower()
+					if choice == "yes":
+						first_room_name =  next(iter(gd.get("rooms", {})), None)
+						load_room(gd, first_room_name)
+						return
+					if choice == "no":
+						return
+					print("Please enter a valid answer")
+				break
+			print("Please enter a valid answer")
+	else:
+		while True:
+			choice = input("Would you like to start? (yes/no) ").strip().lower()
+			if choice == "yes":
+				first_room_name =  next(iter(gd.get("rooms", {})), None)
+				load_room(gd, first_room_name)
+				return
+			if choice == "no":
+				return
+			print("Please enter a valid answer")
+
+
+def main():
+	with open(GAME_DATA_PATH, "r", encoding="utf-8") as f:
+		gd = json.load(f)
+	main_menu(gd)
+	
+
+if __name__ == "__main__":
+	main()
+
