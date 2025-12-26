@@ -2,6 +2,8 @@ import json
 import os
 import sys
 
+	# note: add commenting during / after testing
+
 # Save location for current game and saved game data
 GAME_DATA_PATH = "game_data.json"
 SAVE_GAME_PATH = "save_game.json"
@@ -87,14 +89,14 @@ def interact(gd, room_name, noun):
 
 		# add reward to inventory
 		reward = puzzle.get("reward", "")
-		if isinstance(reward, str) and reward.strip():
+		if isinstance(reward, str) and reward.strip():	# note: add message for what item is added
 			inventory.append(reward)
 
 		# consume needed item for puzzle
 		need = puzzle.get("need", "")
 		if isinstance(need, str) and need.strip():
 			for it in inventory:
-				if it.strip().lower() == need:
+				if it.strip().lower() == need: 	# note: add message for what item is needed
 					inventory.remove(it)
 					break
 
@@ -103,10 +105,10 @@ def interact(gd, room_name, noun):
 		lose = (gd.get("metadata", {}).get("lose", ""))
 		if name == win:
 			print("You win!")
-			sys.exit(0)
+			quit()
 		if name == lose:
 			print("You lose!")
-			sys.exit(0)
+			quit()
 		return None
 
 	else:
@@ -119,7 +121,7 @@ def save_and_quit(gd, room_name):
 	with open(SAVE_GAME_PATH, "w", encoding="utf-8") as f:
 		json.dump(gd, f, indent=2)
 	print("Game saved. Quitting.")
-	sys.exit(0)
+	quit()
 
 
 def move_player(gd, room_name, noun):
@@ -199,6 +201,8 @@ def load_room(gd, room_name):
 	- Parses input and calls corresponding functions
 	- Loop continues until game is exited
 	"""
+	# note: add breaklines in string (\n or print("") for better readability)
+
 	while True:
 		room = get_room(gd, room_name)
 		print(room.get("desc", ""))
@@ -298,7 +302,7 @@ def main():
 	"""
 	Main function to start the game.
 	"""
-	with open(GAME_DATA_PATH, "r", encoding="utf-8") as f:
+	with open(GAME_DATA_PATH, "r") as f:
 		gd = json.load(f)
 	main_menu(gd)
 	
