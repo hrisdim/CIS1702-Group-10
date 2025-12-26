@@ -2,23 +2,25 @@ import json
 import os
 import sys
 
+# Save location for current game and saved game data
 GAME_DATA_PATH = "game_data.json"
 SAVE_GAME_PATH = "save_game.json"
 
-
 def get_room(gd, name):
+	""" Retrives the room data based on the room's name"""
 	return gd.get("rooms", {}).get(name, {})
 
 
 def find_by_name(list, name):
+	""" Finds an item in a list of dictionaries based on its name key"""
 	for it in list or []:
 		if (it.get("name", "")).strip().lower() == name.strip().lower():
 			return it
 	return None
 
 
-# npc dialogue
 def npc_speech(gd, room_name, noun):
+	""" Outputs the corresponding dialogue based on the npc's name """
 	room = get_room(gd, room_name)
 	npc_list = room.get("npc", [])
 	npc = find_by_name(npc_list, noun)
@@ -29,8 +31,8 @@ def npc_speech(gd, room_name, noun):
 		return "End of Dialogue"
 
 
-# drop item in current room
 def drop_item(gd, room_name, noun):
+	""" Removes a valid item from the player's inventory and adds it to the current room's items"""
 	room = get_room(gd, room_name)
 	items = room.setdefault("items", [])
 	if isinstance(noun, str) and noun.strip():
@@ -44,8 +46,8 @@ def drop_item(gd, room_name, noun):
 	return "invalid input"
 
 
-# grab item if it's in the room
 def grab_item(gd, room_name, noun):
+	""" Adds a valid item from the current room's items to the player's inventory """
 	room = get_room(gd, room_name)
 	items = room.setdefault("items", [])
 	if isinstance(noun, str) and noun.strip():
@@ -59,62 +61,75 @@ def grab_item(gd, room_name, noun):
 	return "invalid input"
 
 
-# interact with puzzle
 def interact(gd, room_name, noun):
-    room = get_room(gd, room_name)
-    puzzles = room.get("puzzles", [])
-    puzzle = find_by_name(puzzles, noun)
-    inventory = gd.get("inventory", [])
-    if puzzle is None:
-        return "invalid input"
+	""" 
+	Interaction with a puzzle in the current room.
+	- Validation checks if puzzle exists and is not already done
+	- Marks puzzle as done and adds it to completed list
+	- Adds puzzle reward to inventory if there is one
+	- Consumes needed item from inventory if there is one
+	- Checks for win/lose condition and exits game if met
+	"""
+	room = get_room(gd, room_name)
+	puzzles = room.get("puzzles", [])
+	puzzle = find_by_name(puzzles, noun)
+	inventory = gd.get("inventory", [])
+	if puzzle is None:
+		return "invalid input"
 
 	# mark puzzle as done
-    if not puzzle.get("done", False):
-        puzzle["done"] = True
-        name = puzzle.get("name", "")
-        if name and name not in gd.get("completed", []):
-            gd.setdefault("completed", []).append(name)
-        print("You have completed the puzzle")
+	if not puzzle.get("done", False):
+		puzzle["done"] = True
+		name = puzzle.get("name", "")
+		if name and name not in gd.get("completed", []):
+			gd.setdefault("completed", []).append(name)
+		print("You have completed the puzzle")
 
 		# add reward to inventory
-        reward = puzzle.get("reward", "")
-        if isinstance(reward, str) and reward.strip():
-            inventory.append(reward)
+		reward = puzzle.get("reward", "")
+		if isinstance(reward, str) and reward.strip():
+			inventory.append(reward)
 
 		# consume needed item for puzzle
-        need = puzzle.get("need", "")
-        if isinstance(need, str) and need.strip():
-            for it in inventory:
-                if it.strip().lower() == need:
-                    inventory.remove(it)
-                    break
+		need = puzzle.get("need", "")
+		if isinstance(need, str) and need.strip():
+			for it in inventory:
+				if it.strip().lower() == need:
+					inventory.remove(it)
+					break
 
 		# check for win/lose condition
-        win = (gd.get("metadata", {}).get("win", ""))
-        lose = (gd.get("metadata", {}).get("lose", ""))
-        if name == win:
-            print("You win!")
-            sys.exit(0)
-        if name == lose:
-            print("You lose!")
-            sys.exit(0)
-        return None
+		win = (gd.get("metadata", {}).get("win", ""))
+		lose = (gd.get("metadata", {}).get("lose", ""))
+		if name == win:
+			print("You win!")
+			sys.exit(0)
+		if name == lose:
+			print("You lose!")
+			sys.exit(0)
+		return None
 
-    else:
-        return "You have already completed this puzzle"
+	else:
+		return "You have already completed this puzzle"
 
 
-# save and quit
 def save_and_quit(gd, room_name):
-    gd["saved room"] = room_name
-    with open(SAVE_GAME_PATH, "w", encoding="utf-8") as f:
-        json.dump(gd, f, indent=2)
-    print("Game saved. Quitting.")
-    sys.exit(0)
+	""" Saves current game state to file and exits program """
+	gd["saved room"] = room_name
+	with open(SAVE_GAME_PATH, "w", encoding="utf-8") as f:
+		json.dump(gd, f, indent=2)
+	print("Game saved. Quitting.")
+	sys.exit(0)
 
 
-# move player
 def move_player(gd, room_name, noun):
+	""" 
+	Based on direction input, moves player to target room if possible.
+	- Validates direction input
+	- Checks if target room exists
+	- Checks if any requirements to enter target room are met
+	- Loads target room if all checks pass
+	"""
 	direction = noun.strip().lower()
 	if direction not in {"north", "east", "south", "west"}:
 		return "invalid input"
@@ -142,8 +157,10 @@ def move_player(gd, room_name, noun):
 			load_room(gd, target_name)
 
 
-# parse user input
 def parse_input(gd, action, room_name):
+	"""
+	Parses user input into verb and noun, then calls corresponding function.
+	"""
 	txt = action.strip()
 
 	if not txt:
@@ -175,6 +192,13 @@ def parse_input(gd, action, room_name):
 
 
 def load_room(gd, room_name):
+	"""
+	Main game loop for the current room.
+	- Displays room description, exits, items, NPCs, puzzles, and inventory
+	- Asks for user input
+	- Parses input and calls corresponding functions
+	- Loop continues until game is exited
+	"""
 	while True:
 		room = get_room(gd, room_name)
 		print(room.get("desc", ""))
@@ -217,9 +241,13 @@ def load_room(gd, room_name):
 				print("Please enter a valid action")
 
 
-
-# main menu
 def main_menu(gd):
+	"""
+	Displays main menu and handles loading/starting game.
+	- Shows game title, description and help guide
+	- Asks for user input to load saved game or start new game
+	- Loads appropriate room based on user choice
+	"""
 	metadata = gd.get("metadata", {})
 	print(metadata.get("title", ""))
 	print(metadata.get("desc", ""))
@@ -267,6 +295,9 @@ def main_menu(gd):
 
 
 def main():
+	"""
+	Main function to start the game.
+	"""
 	with open(GAME_DATA_PATH, "r", encoding="utf-8") as f:
 		gd = json.load(f)
 	main_menu(gd)
