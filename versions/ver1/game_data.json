@@ -61,7 +61,7 @@
 					"done": false
 				},
 				{
-					"name": "Spider",
+					"name": "spider",
 					"desc": "Meow. *The spider leaps at you and kills you.*",
 					"need": "loose change",
 					"reward": "spider's affection",
