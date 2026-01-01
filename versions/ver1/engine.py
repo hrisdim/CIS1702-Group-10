@@ -89,15 +89,17 @@ def interact(gd, room_name, noun):
 
 		# add reward to inventory
 		reward = puzzle.get("reward", "")
-		if isinstance(reward, str) and reward.strip():	# note: add message for what item is added
+		if isinstance(reward, str) and reward.strip():	
 			inventory.append(reward)
+			print(f"You have received {reward}")
 
 		# consume needed item for puzzle
 		need = puzzle.get("need", "")
 		if isinstance(need, str) and need.strip():
 			for it in inventory:
-				if it.strip().lower() == need: 	# note: add message for what item is needed
+				if it.strip().lower() == need:
 					inventory.remove(it)
+					print(f"You have used {need}")
 					break
 
 		# check for win/lose condition
@@ -150,7 +152,7 @@ def move_player(gd, room_name, noun):
 	if requirement:
 		if target_name in completed_rooms:
 			load_room(gd, target_name)
-			print(f"You have moved to {target_name}")
+			print(f"You have moved to the {target_name}")
 			return target_name
 		if not any(it.strip().lower() == requirement.lower() for it in gd.get("inventory", [])):
 			print("You can't go there yet.")
@@ -201,40 +203,48 @@ def load_room(gd, room_name):
 	- Parses input and calls corresponding functions
 	- Loop continues until game is exited
 	"""
-	# note: add breaklines in string (\n or print("") for better readability)
 
 	while True:
 		room = get_room(gd, room_name)
 		print(room.get("desc", ""))
+		print("There is a way:")
 		for direction in ("north", "east", "south", "west"):
 			target = room.get(direction, "")
 			if isinstance(target, str) and target.strip():
-				print(f"There is a way to the {direction}: {target}")
+				print(f"  - {direction.capitalize()}: {target.capitalize()}")
 		
 		items = room.get("items", [])
 		if items:
-			print("You see the following items: " + ", " + items)
+			print("You spot the following items:")
+			for item in items:
+				print(f"  - {item}")
+			print("")
 		
 		npcs = room.get("npc", [])
 		if npcs:
-			print("You see the following NPCs:")
+			print("You talk to the following NPCs:")
 			for npc in npcs:
-				print((npc.get("name", "")))
-				print((npc.get("desc", "")))
+				print(f"  - {npc.get("name", "")}")
+				print(f"    {npc.get("desc", "")}")
+			print("")
 
 		puzzles = room.get("puzzles", [])
 		not_done = [p for p in puzzles if not p.get("done", False)]
 		if not_done:
-			print("You see the following:")
+			print("You can interact with:")
 			for p in not_done:
 				name = p.get("name", "")
 				if name:
-					print(name)
+					print(f"  - {name}")
+			print("")
 
-		print("You have the following items in your inventory: " + ", " + gd.get("inventory", []))
+		print("You have the following items in your inventory:")
+		for item in gd.get("inventory", []):
+			print(f"  - {item}")
+		print("")
 		
 		try:
-			action = input("\nWhat do you do? ")
+			action = input("What do you do?\n")
 		except EOFError:
 			# exit if input stream closes
 			save_and_quit(gd, room_name)
