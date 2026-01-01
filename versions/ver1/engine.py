@@ -5,8 +5,14 @@ import sys
 	# note: add commenting during / after testing
 
 # Save location for current game and saved game data
-GAME_DATA_PATH = "game_data.json"
-SAVE_GAME_PATH = "save_game.json"
+# GAME_DATA_PATH = "game_data.json"
+# SAVE_GAME_PATH = "save_game.json"
+
+# REMOVE THIS AFTER TESTING
+BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+GAME_DATA_PATH = os.path.join(BASE_PATH, "game_data.json")
+SAVE_GAME_PATH = os.path.join(BASE_PATH, "save_game.json")
+
 
 def get_room(gd, name):
 	""" Retrives the room data based on the room's name"""
