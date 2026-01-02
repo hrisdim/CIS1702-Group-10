@@ -163,8 +163,7 @@ def move_player(gd, room_name, noun):
 			load_room(gd, target_name)
 			print(f"You have moved to the {target_name}")
 			return target_name
-		if not any(it.strip().lower() == requirement.lower() for it in gd.get("inventory", [])):	# note: change this to the completed key
-																									#		otherwise its searching for the wrong spot			
+		if not any(it.strip().lower() == requirement.lower() for it in gd.get("completed", [])):
 			print("You can't go there yet.")
 			return None
 		else:
