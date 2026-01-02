@@ -157,9 +157,9 @@ def move_player(gd, room_name, noun):
 		return "invalid input"
 
 	requirement = (target_room.get("requirement", "")).strip()
-	completed_rooms = gd.get("completed", [])
+	completed_puzzles = gd.get("completed", []) # Changed variable name to completed puzzles
 	if requirement:
-		if target_name in completed_rooms:
+		if target_name in completed_puzzles: # Same thing here
 			load_room(gd, target_name)
 			print(f"You have moved to the {target_name}")
 			return target_name
@@ -168,6 +168,9 @@ def move_player(gd, room_name, noun):
 			return None
 		else:
 			load_room(gd, target_name)
+	else: # Added else statement as fallback incase a room has no requirement to enter
+		print(f"You have moved to the {target_name}")
+		load_room(gd, target_name) 
 
 
 def parse_input(gd, action, room_name):
