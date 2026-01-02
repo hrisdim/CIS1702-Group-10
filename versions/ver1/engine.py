@@ -4,6 +4,9 @@ import sys
 # note: possibly import time? sleep might help make the menus more readable
 
 	# note: add commenting during / after testing
+	# remove notes and mention when fix has been made
+	# josh made major fixes to code it now runs to win and loss
+	# assign someone to time.sleep()
 
 # Save location for current game and saved game data
 # GAME_DATA_PATH = "game_data.json"
