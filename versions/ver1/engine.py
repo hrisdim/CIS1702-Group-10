@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+# note: possibly import time? sleep might help make the menus more readable
 
 	# note: add commenting during / after testing
 
@@ -87,7 +88,9 @@ def interact(gd, room_name, noun):
 
 	# mark puzzle as done
 	if not puzzle.get("done", False):
-		puzzle["done"] = True
+		puzzle["done"] = True		# note: puzzle should not be marked as complete
+									# 		before any items possibly being consumed
+									# 		move this dum dum
 		name = puzzle.get("name", "")
 		if name and name not in gd.get("completed", []):
 			gd.setdefault("completed", []).append(name)
@@ -160,7 +163,8 @@ def move_player(gd, room_name, noun):
 			load_room(gd, target_name)
 			print(f"You have moved to the {target_name}")
 			return target_name
-		if not any(it.strip().lower() == requirement.lower() for it in gd.get("inventory", [])):
+		if not any(it.strip().lower() == requirement.lower() for it in gd.get("inventory", [])):	# note: change this to the completed key
+																									#		otherwise its searching for the wrong spot			
 			print("You can't go there yet.")
 			return None
 		else:
