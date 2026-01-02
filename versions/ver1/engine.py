@@ -168,7 +168,8 @@ def move_player(gd, room_name, noun):
 			return None
 		else:
 			load_room(gd, target_name)
-	else: # Added else statement as fallback incase a room has no requirement to enter
+	else: # Added else statement as fallback incase a room has no requirement to enter 
+			## not a fallback we just need it to load the room if there is no requirement
 		print(f"You have moved to the {target_name}")
 		load_room(gd, target_name) 
 
