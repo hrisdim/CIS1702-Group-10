@@ -226,7 +226,6 @@ def parse_input(gd, action, room_name):
 		case "quit":
 			return save_and_quit(gd, room_name)
 		case _:
-			print("Please enter a valid action") # kept as fast print
 			return "invalid input"
 
 
