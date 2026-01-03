@@ -1,7 +1,10 @@
 import json
 import os
 import sys
+
 # note: possibly import time? sleep might help make the menus more readable
+import time
+# We imported time
 
 	# note: add commenting during / after testing
 	# remove notes and mention when fix has been made
@@ -16,6 +19,22 @@ import sys
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 GAME_DATA_PATH = os.path.join(BASE_PATH, "game_data.json")
 SAVE_GAME_PATH = os.path.join(BASE_PATH, "save_game.json")
+
+
+#line by line slow printing function
+def slow_print(text, delay=0.6):
+	"""
+	Prints text line-by-line with a delay for readability.
+	"""
+	if not isinstance(text, str) or not text.strip():
+		return
+
+	for line in text.split("\n"):
+		print(line)
+		time.sleep(delay)
+
+
+
 
 
 def get_room(gd, name):
@@ -39,7 +58,7 @@ def npc_speech(gd, room_name, noun):
 	if npc is None:
 		return "invalid input"
 	else:
-		print(npc.get("dialogue", ""))
+		slow_print(npc.get("dialogue", "")) # changed to slow print
 		return "End of Dialogue"
 
 
@@ -52,7 +71,7 @@ def drop_item(gd, room_name, noun):
 			if it.strip().lower() == noun.strip().lower():
 				gd["inventory"].remove(it)
 				items.append(it)
-				print(f"Dropped {it}")
+				print(f"Dropped {it}") # kept as fast print
 				return None
 			return "invalid input"
 	return "invalid input"
@@ -67,7 +86,7 @@ def grab_item(gd, room_name, noun):
 			if it.strip().lower() == noun.strip().lower():
 				gd["inventory"].append(it)
 				items.remove(it)
-				print(f"Grabbed {it}")
+				print(f"Grabbed {it}") # kept as fast print
 				return None
 		return "invalid input"
 	return "invalid input"
@@ -97,13 +116,13 @@ def interact(gd, room_name, noun):
 		name = puzzle.get("name", "")
 		if name and name not in gd.get("completed", []):
 			gd.setdefault("completed", []).append(name)
-		print("You have completed the puzzle")
+		slow_print("You have completed the puzzle") #changed to slow print
 
 		# add reward to inventory
 		reward = puzzle.get("reward", "")
 		if isinstance(reward, str) and reward.strip():	
 			inventory.append(reward)
-			print(f"You have received {reward}")
+			slow_print(f"You have received {reward}") # changed to slow print
 
 		# consume needed item for puzzle
 		need = puzzle.get("need", "")
@@ -111,17 +130,17 @@ def interact(gd, room_name, noun):
 			for it in inventory:
 				if it.strip().lower() == need:
 					inventory.remove(it)
-					print(f"You have used {need}")
+					slow_print(f"You have used {need}") # changed to slow print
 					break
 
 		# check for win/lose condition
 		win = (gd.get("metadata", {}).get("win", ""))
 		lose = (gd.get("metadata", {}).get("lose", ""))
 		if name == win:
-			print("You win!")
+			print("You win!") # kept as fast print
 			quit()
 		if name == lose:
-			print("You lose!")
+			print("You lose!") # kept as fast print
 			quit()
 		return None
 
@@ -134,7 +153,7 @@ def save_and_quit(gd, room_name):
 	gd["saved room"] = room_name
 	with open(SAVE_GAME_PATH, "w", encoding="utf-8") as f:
 		json.dump(gd, f, indent=2)
-	print("Game saved. Quitting.")
+	slow_print("Game saved. Quitting.") # changed to slow print
 	quit()
 
 
@@ -164,16 +183,16 @@ def move_player(gd, room_name, noun):
 	if requirement:
 		if target_name in completed_puzzles: # Same thing here
 			load_room(gd, target_name)
-			print(f"You have moved to the {target_name}")
+			slow_print(f"You have moved to the {target_name}") # changed to slow print
 			return target_name
 		if not any(it.strip().lower() == requirement.lower() for it in gd.get("completed", [])):
-			print("You can't go there yet.")
+			slow_print("You can't go there yet.") # changed to slow print
 			return None
 		else:
 			load_room(gd, target_name)
 	else: # Added else statement as fallback incase a room has no requirement to enter 
 			## not a fallback we just need it to load the room if there is no requirement
-		print(f"You have moved to the {target_name}")
+		slow_print(f"You have moved to the {target_name}") # changed to slow print
 		load_room(gd, target_name) 
 
 
@@ -202,12 +221,12 @@ def parse_input(gd, action, room_name):
 		case "talk":
 			return npc_speech(gd, room_name, noun)
 		case "help":
-			print(gd.get("metadata", {}).get("help", ""))
+			print(gd.get("metadata", {}).get("help", "")) # kept as fast print cuz guide could be like a million years long
 			return None
 		case "quit":
 			return save_and_quit(gd, room_name)
 		case _:
-			print("Please enter a valid action")
+			print("Please enter a valid action") # kept as fast print
 			return "invalid input"
 
 
@@ -222,42 +241,42 @@ def load_room(gd, room_name):
 
 	while True:
 		room = get_room(gd, room_name)
-		print(room.get("desc", ""))
-		print("There is a way:")
+		slow_print(room.get("desc", ""))  # first item changed to slow print for testing
+		slow_print("There is a way:") # changed to slow print
 		for direction in ("north", "east", "south", "west"):
 			target = room.get(direction, "")
 			if isinstance(target, str) and target.strip():
-				print(f"  - {direction.capitalize()}: {target.capitalize()}")
+				slow_print(f"  - {direction.capitalize()}: {target.capitalize()}") # changed to slow print
 		
 		items = room.get("items", [])
 		if items:
-			print("You spot the following items:")
+			slow_print("You spot the following items:") # changed to slow print
 			for item in items:
-				print(f"  - {item}")
-			print("")
+				slow_print(f"  - {item}") # changed to slow print
+			slow_print("") # changed to slow print
 		
 		npcs = room.get("npc", [])
 		if npcs:
-			print("You talk to the following NPCs:")
+			slow_print("You talk to the following NPCs:") # changed to slow print
 			for npc in npcs:
-				print(f"  - {npc.get("name", "")}")
-				print(f"    {npc.get("desc", "")}")
-			print("")
+				slow_print(f"  - {npc.get("name", "")}") # changed to slow print
+				slow_print(f"    {npc.get("desc", "")}") # changed to slow print
+			slow_print("") # changed to slow print (idk if these blank things rlly need it but oh well)
 
 		puzzles = room.get("puzzles", [])
 		not_done = [p for p in puzzles if not p.get("done", False)]
 		if not_done:
-			print("You can interact with:")
+			slow_print("You can interact with:") #changed to slow print
 			for p in not_done:
 				name = p.get("name", "")
 				if name:
-					print(f"  - {name}")
-			print("")
+					slow_print(f"  - {name}") # changed to slow print
+			slow_print("") # changed to slow print
 
-		print("You have the following items in your inventory:")
+		slow_print("You have the following items in your inventory:") # changed to slow print
 		for item in gd.get("inventory", []):
-			print(f"  - {item}")
-		print("")
+			slow_print(f"  - {item}") # changed to slow print
+		slow_print("") # changed to slow print
 		
 		try:
 			action = input("What do you do?\n")
@@ -268,7 +287,7 @@ def load_room(gd, room_name):
 
 		if isinstance(result, str) and result.strip():
 			if result == "invalid input":
-				print("Please enter a valid action")
+				print("Please enter a valid action") # kept as fast print
 
 
 def main_menu(gd):
@@ -279,7 +298,7 @@ def main_menu(gd):
 	- Loads appropriate room based on user choice
 	"""
 	metadata = gd.get("metadata", {})
-	print(metadata.get("title", ""))
+	print(metadata.get("title", "")) # all 3 kept as fast print
 	print(metadata.get("desc", ""))
 	print(metadata.get("help", ""))
 
@@ -309,9 +328,9 @@ def main_menu(gd):
 						return
 					if choice == "no":
 						return
-					print("Please enter a valid answer")
+					print("Please enter a valid answer") # kept as fast print
 				break
-			print("Please enter a valid answer")
+			print("Please enter a valid answer") # kept as fast print
 	else:
 		while True:
 			choice = input("Would you like to start? (yes/no) ").strip().lower()
@@ -321,7 +340,7 @@ def main_menu(gd):
 				return
 			if choice == "no":
 				return
-			print("Please enter a valid answer")
+			print("Please enter a valid answer") # kept as fast print
 
 
 def main():
