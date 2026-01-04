@@ -309,10 +309,10 @@ def main_menu(gd):
 				with open(SAVE_GAME_PATH, "r", encoding="utf-8") as f:
 					sg = json.load(f)
 				gd = sg
-				gd.rooms = sg.get("rooms", {})
-				gd.inventory = sg.get("inventory", [])
-				gd.completed = sg.get("completed", [])
-				gd.metadata = sg.get("metadata", {})
+				gd["rooms"] = sg.get("rooms", {})
+				gd["inventory"] = sg.get("inventory", [])
+				gd["completed"] = sg.get("completed", [])
+				gd["metadata"] = sg.get("metadata", {})
 				saved_room_name = sg.get("saved room", None)
 				if isinstance(saved_room_name, str) and saved_room_name in gd.get("rooms", {}):
 					load_room(gd, saved_room_name)
