@@ -73,7 +73,7 @@ def drop_item(gd, room_name, noun):
 				items.append(it)
 				print(f"Dropped {it}") # kept as fast print
 				return None
-			return "invalid input"
+		return "invalid input" #
 	return "invalid input"
 
 
