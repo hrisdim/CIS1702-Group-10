@@ -96,6 +96,7 @@ def interact(gd, room_name, noun):
 	""" 
 	Interaction with a puzzle in the current room.
 	- Validation checks if puzzle exists and is not already done
+	- Checks if puzzle requirements are met and returns if not
 	- Marks puzzle as done and adds it to completed list
 	- Adds puzzle reward to inventory if there is one
 	- Consumes needed item from inventory if there is one
@@ -108,15 +109,32 @@ def interact(gd, room_name, noun):
 	if puzzle is None:
 		return "invalid input"
 
-	# mark puzzle as done
+	# check if puzzle has been previously completed
 	if not puzzle.get("done", False):
-		puzzle["done"] = True		# note: puzzle should not be marked as complete
-									# 		before any items possibly being consumed
-									# 		move this dum dum
 		name = puzzle.get("name", "")
+
+		# check if player meets requirements for puzzle
+		need = puzzle.get("need", "")
+		if need:
+			if isinstance(need, str) and need.strip():
+				hasneed = False
+				for it in inventory:
+					if it.strip().lower() == need:
+						# consume item needed for puzzle
+						inventory.remove(it)
+						hasneed = True
+						slow_print(f"You have used {need}") # changed to slow print
+						break
+				#checks if player has required item and returns if not
+				if not hasneed:
+					slow_print("Nothing happens") # changed to slow print
+					return None
+					
+		# marks puzzle as complete
+		puzzle["done"] = True
 		if name and name not in gd.get("completed", []):
 			gd.setdefault("completed", []).append(name)
-		slow_print("You have completed the puzzle") #changed to slow print
+			slow_print("You have completed the puzzle") #changed to slow print
 
 		# add reward to inventory
 		reward = puzzle.get("reward", "")
@@ -124,14 +142,7 @@ def interact(gd, room_name, noun):
 			inventory.append(reward)
 			slow_print(f"You have received {reward}") # changed to slow print
 
-		# consume needed item for puzzle
-		need = puzzle.get("need", "")
-		if isinstance(need, str) and need.strip():
-			for it in inventory:
-				if it.strip().lower() == need:
-					inventory.remove(it)
-					slow_print(f"You have used {need}") # changed to slow print
-					break
+		
 
 		# check for win/lose condition
 		win = (gd.get("metadata", {}).get("win", ""))
