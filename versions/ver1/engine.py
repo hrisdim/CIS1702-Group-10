@@ -13,7 +13,7 @@ import time
 # GAME_DATA_PATH = "game_data.json"
 # SAVE_GAME_PATH = "save_game.json"
 
-# REMOVE THIS AFTER TESTING
+# PROBABLY DONT REMOVE THIS AFTER TESTING
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 GAME_DATA_PATH = os.path.join(BASE_PATH, "game_data.json")
 SAVE_GAME_PATH = os.path.join(BASE_PATH, "save_game.json")
