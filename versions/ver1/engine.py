@@ -108,6 +108,7 @@ def interact(gd, room_name, noun):
 	inventory = gd.get("inventory", [])
 	if puzzle is None:
 		return "invalid input"
+	slow_print(puzzle.get("desc", ""))  # show puzzle description when interacting
 
 	# check if puzzle has been previously completed
 	if not puzzle.get("done", False):
