@@ -191,20 +191,22 @@ def move_player(gd, room_name, noun):
 
 	requirement = (target_room.get("requirement", "")).strip()
 	completed_puzzles = gd.get("completed", []) # Changed variable name to completed puzzles
+
 	if requirement:
-		if target_name in completed_puzzles: # Same thing here
-			load_room(gd, target_name)
-			slow_print(f"You have moved to the {target_name}") # changed to slow print
-			return target_name
-		if not any(it.strip().lower() == requirement.lower() for it in gd.get("completed", [])):
+		# removed `if target_name in completed_puzzles` completed is puzzle names, not room names
+		if not any(it.strip().lower() == requirement.lower() for it in completed_puzzles):
 			slow_print("You can't go there yet.") # changed to slow print
 			return None
 		else:
-			load_room(gd, target_name)
+			# removed load_room(gd, target_name) so there wasn't nested loops
+			slow_print(f"You have moved to the {target_name}") # changed to slow print
+			return target_name
 	else: # Added else statement as fallback incase a room has no requirement to enter 
 			## not a fallback we just need it to load the room if there is no requirement
 		slow_print(f"You have moved to the {target_name}") # changed to slow print
-		load_room(gd, target_name) 
+		# removed load_room(gd, target_name) so there wasn't nested loops
+		return target_name  # return new room so load_room() can update room_name
+ 
 
 
 def parse_input(gd, action, room_name):
