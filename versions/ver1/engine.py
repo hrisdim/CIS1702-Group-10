@@ -21,19 +21,24 @@ GAME_DATA_PATH = os.path.join(BASE_PATH, "game_data.json")
 SAVE_GAME_PATH = os.path.join(BASE_PATH, "save_game.json")
 
 
-#line by line slow printing function
 def slow_print(text, delay=0.6):
 	"""
 	Prints text line-by-line with a delay for readability.
 	"""
-	if not isinstance(text, str) or not text.strip():
+	if not isinstance(text, str):
+		return
+
+	# allow blank lines for spacing
+	if text == "":
+		print("")
+		return
+
+	if not text.strip():
 		return
 
 	for line in text.split("\n"):
 		print(line)
 		time.sleep(delay)
-
-
 
 
 
@@ -59,6 +64,7 @@ def npc_speech(gd, room_name, noun):
 		return "invalid input"
 	else:
 		slow_print(npc.get("dialogue", "")) # changed to slow print
+		slow_print("") # spacing for readability
 		return "End of Dialogue"
 
 
@@ -73,7 +79,7 @@ def drop_item(gd, room_name, noun):
 				items.append(it)
 				print(f"Dropped {it}") # kept as fast print
 				return None
-			return "invalid input"
+		return "invalid input" # moved outside of for loop
 	return "invalid input"
 
 
@@ -108,7 +114,9 @@ def interact(gd, room_name, noun):
 	inventory = gd.get("inventory", [])
 	if puzzle is None:
 		return "invalid input"
+
 	slow_print(puzzle.get("desc", ""))  # show puzzle description when interacting
+	slow_print("")  # spacing for readability
 
 	# check if puzzle has been previously completed
 	if not puzzle.get("done", False):
@@ -120,15 +128,17 @@ def interact(gd, room_name, noun):
 			if isinstance(need, str) and need.strip():
 				hasneed = False
 				for it in inventory:
-					if it.strip().lower() == need:
+					if it.strip().lower() == need.strip().lower(): # CHANGED: case-insensitive need compare
 						# consume item needed for puzzle
 						inventory.remove(it)
 						hasneed = True
 						slow_print(f"You have used {need}") # changed to slow print
+						slow_print("")  # spacing for readability
 						break
 				#checks if player has required item and returns if not
 				if not hasneed:
 					slow_print("Nothing happens") # changed to slow print
+					slow_print("")  # spacing for readability
 					return None
 					
 		# marks puzzle as complete
@@ -136,16 +146,14 @@ def interact(gd, room_name, noun):
 		if name and name not in gd.get("completed", []):
 			gd.setdefault("completed", []).append(name)
 			slow_print(puzzle.get("complete_msg", "You have completed the puzzle"))  # uses JSON complete message
-
-			
+			slow_print("")  # spacing for readability
 
 		# add reward to inventory
 		reward = puzzle.get("reward", "")
 		if isinstance(reward, str) and reward.strip():	
 			inventory.append(reward)
 			slow_print(f"You have received {reward}") # changed to slow print
-
-		
+			slow_print("")  # spacing for readability
 
 		# check for win/lose condition
 		win = (gd.get("metadata", {}).get("win", ""))
@@ -168,6 +176,7 @@ def save_and_quit(gd, room_name):
 	with open(SAVE_GAME_PATH, "w", encoding="utf-8") as f:
 		json.dump(gd, f, indent=2)
 	slow_print("Game saved. Quitting.") # changed to slow print
+	slow_print("")  #  spacing for readability
 	quit()
 
 
@@ -199,17 +208,19 @@ def move_player(gd, room_name, noun):
 		# removed `if target_name in completed_puzzles` completed is puzzle names, not room names
 		if not any(it.strip().lower() == requirement.lower() for it in completed_puzzles):
 			slow_print("You can't go there yet.") # changed to slow print
+			slow_print("")  # spacing for readability
 			return None
 		else:
 			# removed load_room(gd, target_name) so there wasn't nested loops
 			slow_print(f"You have moved to the {target_name}") # changed to slow print
+			slow_print("")  # spacing for readability
 			return target_name
 	else: # Added else statement as fallback incase a room has no requirement to enter 
 			## not a fallback we just need it to load the room if there is no requirement
 		slow_print(f"You have moved to the {target_name}") # changed to slow print
+		slow_print("")  # spacing for readability
 		# removed load_room(gd, target_name) so there wasn't nested loops
 		return target_name  # return new room so load_room() can update room_name
- 
 
 
 def parse_input(gd, action, room_name):
@@ -257,11 +268,14 @@ def load_room(gd, room_name):
 	while True:
 		room = get_room(gd, room_name)
 		slow_print(room.get("desc", ""))  # first item changed to slow print for testing
+		slow_print("")  # spacing for readability
+
 		slow_print("There is a way:") # changed to slow print
 		for direction in ("north", "east", "south", "west"):
 			target = room.get(direction, "")
 			if isinstance(target, str) and target.strip():
 				slow_print(f"  - {direction.capitalize()}: {target.capitalize()}") # changed to slow print
+		slow_print("")  # spacing for readability
 		
 		items = room.get("items", [])
 		if items:
@@ -274,8 +288,8 @@ def load_room(gd, room_name):
 		if npcs:
 			slow_print("You talk to the following NPCs:") # changed to slow print
 			for npc in npcs:
-				slow_print(f"  - {npc.get("name", "")}") # changed to slow print
-				slow_print(f"    {npc.get("desc", "")}") # changed to slow print
+				slow_print(f"  - {npc.get('name', '')}") # changed to slow print
+				slow_print(f"    {npc.get('desc', '')}") # changed to slow print
 			slow_print("") # changed to slow print (idk if these blank things rlly need it but oh well)
 
 		puzzles = room.get("puzzles", [])
@@ -303,7 +317,9 @@ def load_room(gd, room_name):
 
 		if isinstance(result, str) and result.strip():
 			if result == "invalid input":
-				print("Please enter a valid action") # kept as fast print
+				print("Please enter a valid action")
+			else:
+				room_name = result  # update to the new room
 
 
 def main_menu(gd):
@@ -370,4 +386,3 @@ def main():
 
 if __name__ == "__main__":
 	main()
-
