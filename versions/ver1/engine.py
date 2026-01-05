@@ -139,7 +139,7 @@ def interact(gd, room_name, noun):
 
 				#checks if player has required item and returns if not
 				if not hasneed:
-					slow_print("You dont have the required item to complete this puzzle") # changed to slow print
+					slow_print("You don't have the required item to complete this puzzle") # changed to slow print
 					slow_print("")  # spacing for readability
 					return None
 					
