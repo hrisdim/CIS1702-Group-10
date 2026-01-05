@@ -400,7 +400,7 @@ def main():
 	"""
 	Main function to start the game.
 	"""
-	with open(GAME_DATA_PATH, "r") as f:
+	with open(GAME_DATA_PATH, "r", encoding="utf-8") as f:
 		gd = json.load(f)
 
 	main_menu(gd)
