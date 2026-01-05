@@ -21,6 +21,7 @@
 					"desc": "You can peak under the welcome mat.",
 					"need": "",
 					"reward": "front door key",
+					"complete_msg": "You lift the mat and find a front door key underneath.",
 					"done": false
 				},
 				{
@@ -28,6 +29,7 @@
 					"desc": "You must use the front door key to open the door.",
 					"need": "front door key",
 					"reward": "",
+					"complete_msg": "You unlock the front door and step inside.",
 					"done": false
 				}
 			]
@@ -58,6 +60,7 @@
 					"desc": "You can put an eye in the statue located at the east door.",
 					"need": "statue eye",
 					"reward": "",
+					"complete_msg": "You place the eye into the statue. Something shifts in the mansion...",
 					"done": false
 				},
 				{
@@ -65,6 +68,7 @@
 					"desc": "Meow. *The spider leaps at you and kills you.*",
 					"need": "loose change",
 					"reward": "spider's affection",
+					"complete_msg": "You offer the loose change. The spider calms down and accepts you.",
 					"done": false
 				}
 			]
@@ -84,6 +88,7 @@
 					"desc": "There is an eye in the bathtub.",
 					"need": "",
 					"reward": "statue eye",
+					"complete_msg": "You reach into the bathtub and grab the statue eye.",
 					"done": false
 				}
 			]
@@ -103,6 +108,7 @@
 					"desc": "There is a will of £0 and an Emmet LEGO figure for you RIP.",
 					"need": "",
 					"reward": "",
+					"complete_msg": "You read the will. It's worth £0. RIP.",
 					"done": false
 				}
 			]

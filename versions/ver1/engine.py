@@ -135,7 +135,9 @@ def interact(gd, room_name, noun):
 		puzzle["done"] = True
 		if name and name not in gd.get("completed", []):
 			gd.setdefault("completed", []).append(name)
-			slow_print("You have completed the puzzle") #changed to slow print
+			slow_print(puzzle.get("complete_msg", "You have completed the puzzle"))  # uses JSON complete message
+
+			
 
 		# add reward to inventory
 		reward = puzzle.get("reward", "")
