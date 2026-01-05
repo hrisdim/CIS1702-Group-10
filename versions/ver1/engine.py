@@ -283,6 +283,7 @@ def load_room(gd, room_name):
 				name = p.get("name", "")
 				if name:
 					slow_print(f"  - {name}") # changed to slow print
+					slow_print(f"    {p.get('desc', '')}")  # show puzzle description when displaying puzzles
 			slow_print("") # changed to slow print
 
 		slow_print("You have the following items in your inventory:") # changed to slow print
