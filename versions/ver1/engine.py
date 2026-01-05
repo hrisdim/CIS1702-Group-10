@@ -298,8 +298,10 @@ def load_room(gd, room_name):
 		if isinstance(result, str) and result.strip():
 			if result == "invalid input":
 				print("Please enter a valid action") # kept as fast print
+			else:
+				room_name = result  # switch to the new room
 
-
+	
 def main_menu(gd):
 	"""
 	Displays main menu and handles loading/starting game.
